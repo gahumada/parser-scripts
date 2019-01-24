@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Javascript test</title>
+	</head>
+	<body>
+		
+		<input type="file" id="input" onchange="handleFileSelect(this.files[0])">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.6.3/papaparse.js"></script>		
+		<script>
+		function handleFileSelect(csvFile) {
+			Papa.parse(csvFile,{
+        		header: true,
+        		dynamicTyping: true,
+        		complete: function (results) {
+            		console.log(results);
+					}
+				});				
+			}	
+
+		</script>
+
+	</body>
+<html>
+	
