@@ -1,25 +1,59 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<title>Javascript test</title>
-	</head>
-	<body>
-		
-		<input type="file" id="input" onchange="handleFileSelect(this.files[0])">
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.6.3/papaparse.js"></script>		
-		<script>
-		function handleFileSelect(csvFile) {
-			Papa.parse(csvFile,{
-        		header: true,
-        		dynamicTyping: true,
-        		complete: function (results) {
-            		console.log(results);
-					}
-				});				
-			}	
 
-		</script>
-
-	</body>
 <html>
-	
+
+        <head>
+
+               <title>xlsx_parser_test_v2</title>
+
+        </head>
+
+        <body>
+
+
+
+               <input type="file" onchange="onChange(event)">
+
+               <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.1/xlsx.min.js"></script>
+
+               <script>
+
+               function onChange(event) {
+
+                       //console.log(event);
+
+                       var file = event.target.files[0];
+
+                       var reader = new FileReader();
+
+                       reader.onload = function (e){
+
+                               //console.log(e.target);
+
+                               var data = e.target.result;
+
+                               //console.log(typeof data);
+
+                               data = new Uint8Array(data);
+
+                               //console.log(data);
+
+                               var wb = XLSX.read(data,{type:'array'});
+
+                               console.log(wb);
+
+                       }
+
+                       reader.readAsArrayBuffer(file);
+
+               }
+
+
+
+               </script>
+
+
+
+        </body>
+
+<html>
