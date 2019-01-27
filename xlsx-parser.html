@@ -4,7 +4,7 @@
 
         <head>
 
-               <title>xlsx_parser_test_v2</title>
+               <title>xlsx_parser_test</title>
 
         </head>
 
@@ -14,38 +14,59 @@
 
                <input type="file" onchange="onChange(event)">
 
-               <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.1/xlsx.min.js"></script>
+               <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.1/xlsx.full.min.js"></script>
 
                <script>
 
                function onChange(event) {
-
-                       //console.log(event);
-
                        var file = event.target.files[0];
-
                        var reader = new FileReader();
-
                        reader.onload = function (e){
-
-                               //console.log(e.target);
-
                                var data = e.target.result;
-
-                               //console.log(typeof data);
-
-                               data = new Uint8Array(data);
-
-                               //console.log(data);
-
-                               var wb = XLSX.read(data,{type:'array'});
-
-                               console.log(wb);
-
+                               var wb = XLSX.read(data,{type:'binary'});
+                               //console.log('before readWB');
+                               readWB(wb);
                        }
+                       reader.readAsBinaryString(file);
+               }
+               function readWB (wb){
+                //console.log('in wb');
+                sheetList = wb.SheetNames;
+                console.log(sheetList.length);
+                 for (i=0;i<sheetList.length;i++){
+                   sheetName = sheetList[i];
+                   console.log[sheetName];
+                   sheet = wb.Sheets[sheetName];
+                   console.log('sheet object:',sheet);
 
-                       reader.readAsArrayBuffer(file);
+                   range = sheet['!ref'];
 
+                   var startRow = range.s.r;
+                   var endRow = range.e.r;
+                   var startCol = range.s.c;
+                   var endCol = range.e.c;
+
+                   var accCodes;
+                   var accValues;
+
+                   var regEx = /dddd-ddd-ddd-ddd/;
+
+                   var j = 0;
+                   //document.writeln(sheet,range);
+
+                   for (var row = startRow;row <=endRow;++row){
+                     for (var col = startCol; col <= endCol;++col){
+                       cellAddress = {c:col,r:row};
+                       cellObj = sheet[cellAddress];
+                       if (cellObj.t == 's' && regEx.test(cellObj.v)){
+                         accCodes[j]=cellObj.v;
+                         //document.writeln(CellObj.v);
+                         j++;
+                       }
+                     }
+                   }
+                   console.log(accCodes);
+                 }
                }
 
 
