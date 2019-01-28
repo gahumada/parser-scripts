@@ -34,38 +34,51 @@
                 sheetList = wb.SheetNames;
                 console.log(sheetList.length);
                  for (i=0;i<sheetList.length;i++){
-                   sheetName = sheetList[i];
+                   var sheetName = sheetList[i];
                    console.log[sheetName];
-                   sheet = wb.Sheets[sheetName];
-                   console.log('sheet object:',sheet);
+                   var sheet = wb.Sheets[sheetName];
+                   var rangeString = sheet['!ref'];
+                   var rangeObj = XLSX.utils.decode_range(rangeString);
+                   console.log(rangeObj);
+                   var startRow = rangeObj.s.r;
+                   var endRow = rangeObj.e.r;
+                   var startCol = rangeObj.s.c;
+                   var endCol = rangeObj.e.c;
 
-                   range = sheet['!ref'];
+                   var accCodes = [];
+                   var accValues = [];
+                   var accRows = [];
 
-                   var startRow = range.s.r;
-                   var endRow = range.e.r;
-                   var startCol = range.s.c;
-                   var endCol = range.e.c;
+                   var accDict = {};
 
-                   var accCodes;
-                   var accValues;
-
-                   var regEx = /dddd-ddd-ddd-ddd/;
-
+                   var regexp = /\d\d\d\d-\d\d\d-\d\d\d-\d\d\d/;
                    var j = 0;
-                   //document.writeln(sheet,range);
-
                    for (var row = startRow;row <=endRow;++row){
                      for (var col = startCol; col <= endCol;++col){
                        cellAddress = {c:col,r:row};
-                       cellObj = sheet[cellAddress];
-                       if (cellObj.t == 's' && regEx.test(cellObj.v)){
-                         accCodes[j]=cellObj.v;
-                         //document.writeln(CellObj.v);
-                         j++;
+                       cellObj = sheet[XLSX.utils.encode_cell(cellAddress)];
+                       if (cellObj){
+                         //document.writeln(cellObj.v);
+                         if (cellObj.t == 's' && regexp.test(cellObj.v)){
+                           accCodes[j]=regexp.exec(cellObj.v);
+                           accRows[j] = row;
+                           for (k=col+1;k<=endCol;++k){
+                             valCell = sheet[XLSX.utils.encode_cell({c:k,r:row})];
+                             if (valCell){
+                               accValues[j]=valCell.v;
+                               accDict[accCodes[j]]=accValues[j];
+                               document.writeln('(',accCodes[j],';',accValues[j],')');
+                             }
+                           }
+                           j++;
+                         }
+                        //document.writeln(row,col);
                        }
+                       //document.writeln(cellObj.v);
                      }
                    }
-                   console.log(accCodes);
+                   console.log('Account codes and values:',accDict);
+                   //console.log('Account values:',accValues);
                  }
                }
 
